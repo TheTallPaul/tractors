@@ -1,8 +1,16 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
 from typing import List
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from app import app
 from .database import SessionDep, Supplier
 from .models import SupplierReq, SupplierRet, DemandReq, TractorDemand
+
+templates = Jinja2Templates(directory="app/web/templates")
+
+@app.get("/", response_class=HTMLResponse)
+async def homepage(request: Request):
+    return templates.TemplateResponse(request, "index.html")
 
 @app.post("/predict/part_supplier")
 async def supplier_endpoint(req: SupplierReq, session: SessionDep) -> SupplierRet:
@@ -30,7 +38,6 @@ async def supplier_endpoint(req: SupplierReq, session: SessionDep) -> SupplierRe
         "recomended_supplier_id": 1,
         "confidence": 0.39
     }
-
 
 @app.post("/predict/tractor_demand")
 async def demand_endpoint(req: DemandReq, session: SessionDep) -> List[TractorDemand]:
