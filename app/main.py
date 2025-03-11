@@ -1,18 +1,8 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import HTTPException
 from typing import List
-from contextlib import asynccontextmanager
-
-from .database import create_db_and_tables, drop_db_and_tables, fill_db, SessionDep, Supplier
+from app import app
+from .database import SessionDep, Supplier
 from .models import SupplierReq, SupplierRet, DemandReq, TractorDemand
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    create_db_and_tables()
-    fill_db()
-    yield
-    drop_db_and_tables()
-
-app = FastAPI(lifespan=lifespan)
 
 @app.post("/predict/part_supplier")
 async def supplier_endpoint(req: SupplierReq, session: SessionDep) -> SupplierRet:
