@@ -9,6 +9,12 @@ A full-stack monorepo for a tractor supply machine-learning API.
 
 ## How to Run
 
+First, unzip the machine learning file:
+
+```tar -xzvf app/learning/models/model_supplier.tar.gz```
+
+The, build and run the server with Docker:
+
 ```docker build -t server .```
 
 ```docker run -d --name servercontainer -p 80:80 server```

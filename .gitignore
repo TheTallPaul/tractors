@@ -1,2 +1,4 @@
 __pycache__/
 database.db
+.DS_Store
+app/learning/models/model_supplier.pkl
