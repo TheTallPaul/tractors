@@ -8,6 +8,31 @@
   </head>
   <body>
     <h1>🚜🚜🚜 Tractors-n-Stuff 🚜🚜🚜</h1>
-    <p>Hello administrator.</p>
+    <p>Hello administrator</p>
+
+    {% if recs %}
+    <h2>Recommended Orders</h2>
+    <div class="container">
+      {% for month, parts in recs.items() %}
+      <div class="month-rec">
+        <h3>{{ month }}</h3>
+        <ul class="rec-list">
+          {% for part in parts %}
+          <li>
+            Order <b>{{ part.quantity }}</b> of
+            <b>{{ part.part_serial }}</b> from
+            <b>{{ part.supplier_name }}</b> (<b
+              >{{ (part.confidence*100) | int }}%</b
+            >
+            confidence)
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p>No recommendations found.</p>
+    {% endif %}
   </body>
 </html>

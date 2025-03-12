@@ -5,3 +5,29 @@ body {
     background-color: darkslategray;
     color: whitesmoke
 }
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 80vw;
+    margin: 0 auto;
+}
+
+.month-rec {
+    margin: 10px;
+    padding: 10px;
+    background-color: darkcyan;
+    border-radius: 10px;
+    width: 300px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.rec-list {
+    text-align: left;
+}

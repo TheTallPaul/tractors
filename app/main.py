@@ -3,6 +3,8 @@ from typing import List
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from app import app
+from calendar import month_name
+from collections import defaultdict
 from .database import SessionDep, PartSerials
 from .models import PartOrderReq, PartOrder, PartOrderRet
 from .learning import PartOrderPredictor
@@ -11,8 +13,16 @@ from .domain import get_supplier_id_dict, get_inventory_dict
 templates = Jinja2Templates(directory="app/web/templates")
 
 @app.get("/", response_class=HTMLResponse)
-async def homepage(request: Request):
-    return templates.TemplateResponse(request, "index.html")
+async def homepage(request: Request, session: SessionDep):
+    ret = await predict_part_orders(PartOrderReq(), session)
+    
+    sortRecs = defaultdict(list)
+    for rec in ret["recommendations"]:
+        sortRecs[month_name[rec.month]].append(rec)
+
+    ctx = {"recs": dict(sortRecs)}
+
+    return templates.TemplateResponse(request, "index.html", ctx)
 
 partOrderPredictor = PartOrderPredictor()
 
