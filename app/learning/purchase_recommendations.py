@@ -9,15 +9,12 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
 import numpy as np
 import pickle
+
 from app.database import engine, ConditionsHistory, Sales, Deliveries, TractorParts
+from app.models import PartOrderRecommendation
 
 MODEL_DIR = "app/learning/models"
 makedirs(MODEL_DIR, exist_ok=True)
-
-class PartOrderRecommendation(BaseModel):
-    quantity_to_order: int
-    supplier_id: int
-    confidence: float
 
 class PartOrderPredictor:
     def __init__(self) -> None:

@@ -1,8 +1,11 @@
 from sqlmodel import Session
 from datetime import timedelta, date
 from random import randint, choice
+
 from .schemas import *
 from .connection import engine
+
+PartSerials = ["wheels-x77346", "engine-67xsj97", "flashy-bits-85yunb443"]
 
 def fill_db() -> None:
     with Session(engine) as session:
