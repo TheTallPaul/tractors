@@ -19,7 +19,7 @@ The, build and run the server with Docker:
 
 ```docker run -d --name servercontainer -p 80:80 server```
 
-Navigate to [localhost:80](http://127.0.0.1:80)
+Navigate to [localhost:80](http://localhost:80)
 
 ### Building the Machine Learning files
 
