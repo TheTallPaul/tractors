@@ -4,29 +4,34 @@ from random import randint, choice
 from .schemas import *
 from .connection import engine
 
-
 def fill_db() -> None:
     with Session(engine) as session:
-        partSerials = ["wheels-x77346", "engine-67xsj97", "flashy-bits-85yunb443"]
         dbObjects = [
-            Inventory(part_serial=partSerials[0], quantity=10),
-            Inventory(part_serial=partSerials[1], quantity=20),
-            Inventory(part_serial=partSerials[2], quantity=30),
+            Inventory(part_serial=PartSerials[0], quantity=10),
+            Inventory(part_serial=PartSerials[1], quantity=20),
+            Inventory(part_serial=PartSerials[2], quantity=30),
             Supplier(name="Parts-R-Us"),
             Supplier(name="Parts World"),
             Supplier(name="Parting Ways"),
+            Supplier(name="Parts Emporium"),
+            Supplier(name="Parts Galore"),
+            Supplier(name="Parts Palace"),
+            Supplier(name="Parts Mart"),
+            Supplier(name="Parts Depot"),
+            Supplier(name="Parts Place"),
+            Supplier(name="Parts Store"),
             Tractor(name="Bigfoot"),
             Tractor(name="Dogman"),
             Tractor(name="Jackalope"),
-            TractorParts(tractor_id=1, part_serial=partSerials[0], quantity_required=6),
-            TractorParts(tractor_id=2, part_serial=partSerials[0], quantity_required=4),
-            TractorParts(tractor_id=3, part_serial=partSerials[0], quantity_required=4),
-            TractorParts(tractor_id=1, part_serial=partSerials[1], quantity_required=4),
-            TractorParts(tractor_id=2, part_serial=partSerials[1], quantity_required=2),
-            TractorParts(tractor_id=3, part_serial=partSerials[1], quantity_required=1),
-            TractorParts(tractor_id=1, part_serial=partSerials[2], quantity_required=300),
-            TractorParts(tractor_id=2, part_serial=partSerials[2], quantity_required=84),
-            TractorParts(tractor_id=3, part_serial=partSerials[2], quantity_required=53),
+            TractorParts(tractor_id=1, part_serial=PartSerials[0], quantity_required=6),
+            TractorParts(tractor_id=2, part_serial=PartSerials[0], quantity_required=4),
+            TractorParts(tractor_id=3, part_serial=PartSerials[0], quantity_required=4),
+            TractorParts(tractor_id=1, part_serial=PartSerials[1], quantity_required=4),
+            TractorParts(tractor_id=2, part_serial=PartSerials[1], quantity_required=2),
+            TractorParts(tractor_id=3, part_serial=PartSerials[1], quantity_required=1),
+            TractorParts(tractor_id=1, part_serial=PartSerials[2], quantity_required=300),
+            TractorParts(tractor_id=2, part_serial=PartSerials[2], quantity_required=84),
+            TractorParts(tractor_id=3, part_serial=PartSerials[2], quantity_required=53),
         ]
 
         start_date, end_date = date(2021, 1, 1), date(2024, 12, 31)
@@ -46,9 +51,9 @@ def fill_db() -> None:
                     sales_date=start_date,
                 ))
             dbObjects.append(Deliveries(
-                part_serial=choice(partSerials),
+                part_serial=choice(PartSerials),
                 quantity=randint(1,100),
-                supplier_id=randint(1,3),
+                supplier_id=randint(1,10),
                 delivery_date=start_date,
                 days_after_expected=randint(-5,5),
             ))
@@ -56,4 +61,4 @@ def fill_db() -> None:
         
         session.bulk_save_objects(dbObjects)
         session.commit()
-        print ("🌱🌱🌱 Database filled with seed data 🌱🌱🌱")
+        print("🌱🌱🌱 Database filled with seed data 🌱🌱🌱")

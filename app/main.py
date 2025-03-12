@@ -1,10 +1,12 @@
-from fastapi import HTTPException, Request
+from fastapi import Request
 from typing import List
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from app import app
-from .database import SessionDep, Supplier
-from .models import SupplierReq, SupplierRet, DemandReq, TractorDemand
+from .database import SessionDep, PartSerials
+from .models import PartOrderReq, PartOrder, PartOrderRet
+from .learning import PartOrderPredictor
+from .domain import get_supplier_id_dict, get_inventory_dict
 
 templates = Jinja2Templates(directory="app/web/templates")
 
@@ -12,44 +14,37 @@ templates = Jinja2Templates(directory="app/web/templates")
 async def homepage(request: Request):
     return templates.TemplateResponse(request, "index.html")
 
-@app.post("/predict/part_supplier")
-async def supplier_endpoint(req: SupplierReq, session: SessionDep) -> SupplierRet:
-    supplier = session.get(Supplier, 1)
-    if not supplier:
-        raise HTTPException(status_code=404, detail="Supplier not found")
+partOrderPredictor = PartOrderPredictor()
+
+@app.post("/predict/part_order")
+async def predict_part_orders(req: PartOrderReq, session: SessionDep) -> PartOrderRet:
+    months = [req.month] if req.month else range(1, 13)
+    parts = [req.part_serial] if req.part_serial else PartSerials
+
+    inventoryDict = get_inventory_dict(session)
+    supplierDict = get_supplier_id_dict(session)
+
+    recommendations: List[PartOrder] = []
+    for month in months:
+        for part in parts:
+            result = partOrderPredictor.predict(
+                month=month,
+                part_serial=part,
+                current_quantity=inventoryDict.get(part, 0),
+                avg_temp=90 - 10 * abs(7 - month),   # 30° F in January, 90° F in July
+                precipitation=5 + 3 * abs(7 - month) # 23" in January, 5" in July
+            )
+            recommendation = PartOrder(
+                part_serial=part,
+                month=month,
+                quantity=result["quantity_to_order"],
+                supplier_id=result["supplier_id"],
+                supplier_name=supplierDict.get(result["supplier_id"], "Unknown"),
+                confidence=result["confidence"]
+            )
+            inventoryDict[part] += result["quantity_to_order"]
+            recommendations.append(recommendation)
 
     return {
-        "suppliers": [
-            {
-                "expected_delivery": req.need_by_date,
-                "expected_amount": 10,
-                "supplier_id": 1,
-                "supplier_name": supplier.name,
-                "confidence": 0.9
-            },
-            {
-                "expected_delivery": req.need_by_date,
-                "expected_amount": 10,
-                "supplier_id": 2,
-                "supplier_name": "Supplier 2",
-                "confidence": 0.8
-            }
-        ],
-        "recomended_supplier_id": 1,
-        "confidence": 0.39
+        "recommendations": recommendations
     }
-
-@app.post("/predict/tractor_demand")
-async def demand_endpoint(req: DemandReq, session: SessionDep) -> List[TractorDemand]:
-    return [
-        {
-            "tractor_id": 1,
-            "amount": 10,
-            "confidence": 0.9
-        },
-        {
-            "tractor_id": 2,
-            "amount": 10,
-            "confidence": 0.8
-        }
-    ]

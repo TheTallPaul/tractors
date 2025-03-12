@@ -1,6 +1,8 @@
 from sqlmodel import Field, SQLModel
 from datetime import date
 
+PartSerials = ["wheels-x77346", "engine-67xsj97", "flashy-bits-85yunb443"]
+
 class Inventory(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     part_serial: str = Field(index=True)
@@ -20,7 +22,7 @@ class Supplier(SQLModel, table=True):
 
 class Sales(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    tractor_id: str = Field(index=True)
+    tractor_id: int = Field(index=True)
     quantity: int = Field()
     region_id: int = Field()
     price: int = Field()
